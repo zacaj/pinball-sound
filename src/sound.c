@@ -31,6 +31,7 @@ const IOPin DATA = { bB, P13 };
 typedef int16_t Sample;
 
 typedef struct {
+	uint32_t f_loc;//location in \file that will be read next
 	uint8_t *data[2];//block of memory from \file
 	uint32_t size[2]; //size of \data1
 	uint32_t start[2];//location in bytes where \data1 starts in \file
@@ -40,7 +41,7 @@ typedef struct {
 	char *name;
 	FIL file;
 	uint8_t done;//set to 1 to free this sound
-	uint32_t f_loc;//location in \file that will be read next
+	uint32_t unused_dontTouch;
 } Sound;
 
 #define MAX_SOUND 4
@@ -84,10 +85,12 @@ Sample sound_get(int i) {
 
 	if(sound->f_loc>=sound->file.fsize)
 		sound->done=1;
-	if(!sound->ready[sound->cur] || sound->f_loc>=sound->file.fsize)
+	if(!sound->ready[sound->cur] || sound->f_loc>=sound->file.fsize || sound->done)
 		return 0;
 
 	uint32_t off=sound->f_loc - sound->start[sound->cur];
+	if(off>40000 || sound->cur>1)
+		return 0;
 	if(off>=sound->size[sound->cur]) {
 		sound->ready[sound->cur]=0;
 		free(sound->data[sound->cur]);
@@ -169,20 +172,18 @@ void updateSound() {
 					otherEnd=sounds[i]->start[!j]+sounds[i]->size[!j];
 				if(otherEnd>next)
 					next=otherEnd;
-				if(next>sounds[i]->file.fsize) {
-					next=0;
-				}
 				uint32_t amt=8192/2;
 				if(next+amt>sounds[i]->file.fsize)
-					amt=sounds[i]->file.fsize-next;
-
+					amt=(uint32_t)sounds[i]->file.fsize-next;
 
 				sounds[i]->ready[j]=0;
-				if(amt==0)
+				if(amt==0 || amt>8192)
 					continue;
 				sounds[i]->data[j]=malloc(amt);
 
 				UINT read=-1;
+				if(j<0 || j>1)
+					read=-2;
 				f_lseek(&sounds[i]->file,next);
 				FRESULT res=f_read(&sounds[i]->file,sounds[i]->data[j],amt,&read);
 				if(res==FR_OK && read==amt) {

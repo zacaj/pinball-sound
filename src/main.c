@@ -221,7 +221,7 @@ int main(void)
 	 GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Pin =  COM_CLOCK|COM_DATA;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOF, ENABLE);
 	GPIO_InitStructure.GPIO_Pin =  COM_ACK;
@@ -234,6 +234,7 @@ int main(void)
 	uint8_t command=0;
 	uint8_t nCommand=0;
 	uint8_t cClock=1;
+	uint32_t lastCommTime=0;
 
 
 	uint32_t temp=0;
@@ -242,6 +243,7 @@ int main(void)
 		//updateIOs();
 		uint8_t clk=GPIO_ReadInputDataBit(GPIOA,COM_CLOCK);
 		if(clk && !cClock) {
+			lastCommTime=msElapsed;
 			command>>=1;
 			command|=GPIO_ReadInputDataBit(GPIOA,COM_DATA)<<7;
 			GPIO_WriteBit(GPIOF,COM_ACK,0);
@@ -259,13 +261,18 @@ int main(void)
 				}
 				command=0;
 				nCommand=0;
+				lastCommTime=0;
 			}
 		}
 		else if(!clk && cClock) {
 			GPIO_WriteBit(GPIOF,COM_ACK,1);
 		}
-		if(msElapsed%20000==0)
-			loadSound("black.16");
+		if(!cClock && msElapsed-lastCommTime>100 && lastCommTime!=0) {
+			nCommand=0;
+			command=0;
+		}
+		//if(msElapsed%5000==0)
+		//	loadSound("red-pos.raw");
 		cClock=clk;
 		//if(temp++==5000)
 		if(buttonState!=STM_EVAL_PBGetState(BUTTON_USER))
