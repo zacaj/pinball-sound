@@ -165,10 +165,37 @@ uint32_t timerFunc(void* data) {
 void switchPlayerRelay(int n);
 
 char *soundFiles[]={
-		"red-pos.raw",
-		"red-neg.raw",
-		"beyond.16",
-		"black.16"
+		"",
+		""/*cUSE_EXTRA_BALL*/,
+		"succmrev.raw"/*cJACKPOT*/,
+		"out1.raw"/*cBALL_OUT*/,
+		"exblecho.raw"/*cEXTRA_BALL*/,
+		""/*cCOLLECT_BONUS*/,
+		"siren.raw"/*cLOCK_START*/,
+		"captpos1.raw"/*cBALL_CAPTURED_MB*/,
+		"captstay.raw"/*cBALL_CAPTURED_LOCK*/,
+		""/*cJACKPOT_READY*/,
+		"exblgntl.raw"/*cEXTRA_BALL_READY*/,
+		""/*cCOLLECT_BONUS_READY*/,
+		""/*cBALLS_LOCKED*/,
+		"drpcpgen.raw"/*cMB_READY*/,
+		"lanepos1.raw"/*cLANE_COMPLETE*/,
+		"shoot1.raw"/*cSHOOT*/,
+		"drpsplng.raw"/*cTHREE_COMPLETE*/,
+		"wrong2.raw"/*cBALL_CAPTURED_REJECTED*/,
+		"drop3gen.raw"/*cFIVE_HIT*/,/////////////////////////////
+		"shotcare.raw"/*cSHOOT_CAREFULLY*/,
+		"red-pos.raw"/*cRED_HIT*/,
+		"lanegen1.raw"/*cLANE_HIT*/,
+		"captneg2.raw"/*cBALL_CAPTURE_EJECT*/,
+		"drpspsht.raw"/*cTHREE_HIT*/,
+		"captneg1.raw"/*cACTIVATE_MISS*/,
+		""/*cROLLOVER*/,
+		"red-neg.raw"/*cRED_MISS*/,
+		"drop3gen.raw"/*cFIVE_MISS*/,
+		""/*cPOP_HIT*/,
+		"drpshtgn.raw"/*cTHREE_MISS*/,
+		""/*cLANE_MISS*/,
 };
 
 int main(void)
